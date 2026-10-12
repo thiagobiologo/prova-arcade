@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#120c33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Prova Arcade · Protótipo</title>
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app/style.css">
+</head>
+<body data-scene="loading">
+<canvas id="menubg" aria-hidden="true"></canvas>
+<div id="wm-demo" aria-hidden="true" hidden></div>
+
+<!-- ===== JOGO ===== -->
+<div id="stage" hidden>
+  <div id="frame" data-p="0">
+    <canvas id="game" aria-label="Área do jogo"></canvas>
+    <div id="hud">
+      <div id="hud-left">
+        <div id="hud-p" class="chip"><b id="hud-badge">P1</b><span id="hud-name">—</span></div>
+        <div id="hud-hp" aria-label="Vidas"></div>
+        <div id="hud-ammo" hidden title="Orbe de Luz: poucos tiros, sem recarga"></div>
+        <div id="hud-bank" title="Suas moedas: no fim da prova você troca por skins e acessórios"><i><u id="bank-fill"></u></i><span id="bank-txt">0</span></div>
+      </div>
+      <div id="hud-mid"><span id="hud-stage">—</span><span id="hud-dots"></span><span id="hud-assist" hidden>✦ AJUDA DA FASE</span></div>
+      <div id="hud-r"><span id="hud-score">0</span><button id="btn-mute" class="icon" aria-label="Som">♪</button><button id="btn-pause" class="icon" aria-label="Pausar">❚❚</button></div>
+    </div>
+    <div id="bossbar" hidden><span id="bb-name">CHEFE</span><i><u id="bb-fill"></u></i></div>
+    <div id="turnflash" aria-hidden="true"></div>
+    <div id="qpanel" hidden>
+      <i id="q-tail" aria-hidden="true"></i>
+      <img id="q-av" src="/app/gfx/aura.png" alt="" draggable="false">
+      <div id="q-body">
+        <div id="q-timebar" title="Tempo de leitura"><u id="q-time"></u></div>
+        <div id="q-head"><span id="q-who"></span><span id="q-skill"></span><span id="q-prog"></span><button id="q-say" type="button" aria-label="Ouvir a mensagem em voz alta">🔊 OUVIR</button></div>
+        <p id="q-ctx"></p>
+        <p id="q-stem"></p>
+        <ul id="q-opts"></ul>
+        <p id="q-hint">Pise no bloco da sua resposta. Você pode trocar até passar pelo portão.</p>
+      </div>
+    </div>
+    <div id="touch">
+      <div id="dpad"><button id="t-left" aria-label="Esquerda">◀</button><button id="t-right" aria-label="Direita">▶</button></div>
+      <div id="rbtns"><button id="t-fire" aria-label="Atirar" hidden>✦</button><button id="t-jump" aria-label="Pular">PULAR</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CENAS (menus) ===== -->
+<main id="scenes">
+  <section class="scene active" id="sc-loading">
+    <h1 class="logo"><span>PROVA</span><span class="b">ARCADE</span></h1>
+    <div class="load"><i><u id="load-fill"></u></i><span id="load-txt">Carregando o jogo…</span></div>
+  </section>
+
+  <section class="scene" id="sc-title">
+    <h1 class="logo big"><span>PROVA</span><span class="b">ARCADE</span></h1>
+    <p class="ed" id="ed-badge" hidden>EDIÇÃO DEMONSTRAÇÃO · PREMIUM</p>
+    <p class="tag">Aventura de nivelamento · você joga, a gente enxerga o que você já sabe</p>
+    <div class="pack" id="title-pack">Ciências · 6º ano · 3º bimestre</div>
+    <button class="btn gold xl" id="btn-start">JOGAR</button>
+    <div class="row-mini"><button class="btn ghost" id="btn-full">TELA CHEIA</button><button class="btn ghost" id="btn-mute2">SOM</button><button class="btn ghost" id="btn-out">SAIR</button></div>
+    <ul class="pitch" id="pitch" hidden><li><b>Diagnóstico por habilidade</b><span>cada caso da AURA mede uma habilidade essencial, dentro da aventura</span></li><li><b>Painel para o professor</b><span>mapa da sala, defasagens por prioridade, Excel e PDF</span></li><li><b>Aplicação por QR Code</b><span>30 a 40 alunos no celular, sem instalar nada</span></li></ul>
+    <p class="lic" id="lic-line"></p>
+    <p class="terms" id="terms" hidden>Demonstração licenciada e rastreada. É proibido copiar, comercializar, extrair personagens, arte, código ou perguntas, ou redistribuir este link (Lei 9.610/98 e Lei 9.609/98). © Thiago Silva.</p>
+  </section>
+
+  <section class="scene" id="sc-mode">
+    <h2>QUANTOS JOGADORES?</h2>
+    <div class="cards">
+      <button class="card p1" id="m1"><b>1 JOGADOR</b><span>Você joga sozinho a aventura inteira.</span></button>
+      <button class="card duo" id="m2"><b>2 JOGADORES</b><span>No mesmo aparelho, <u>um de cada vez</u>. A tela muda de cor para mostrar de quem é a vez.</span><i class="pp"><em class="c1">P1</em><em class="c2">P2</em></i></button>
+    </div>
+    <div class="seg" id="len" role="group" aria-label="Duração">
+      <button id="len-q" class="on" type="button"><b>DEMO RÁPIDO</b><small>~8 min</small></button>
+      <button id="len-f" type="button"><b>COMPLETO</b><small>~18 min · fases longas</small></button>
+    </div>
+    <button class="btn ghost" data-back="title">VOLTAR</button>
+  </section>
+
+  <section class="scene" id="sc-ident">
+    <h2>IDENTIFICAÇÃO</h2>
+    <form id="idform" autocomplete="off" novalidate>
+      <fieldset class="idcard c1" id="id1"><legend><b>P1</b> JOGADOR 1</legend>
+        <label for="n1">Nome completo</label><input id="n1" maxlength="60" autocomplete="off" placeholder="Nome e sobrenome">
+        <label for="t1">Turma</label><input id="t1" maxlength="12" autocomplete="off" placeholder="Ex.: 6º A">
+        <label class="chk"><input type="checkbox" id="r1"><span>🔊 Quero ouvir as perguntas em voz alta</span></label>
+      </fieldset>
+      <fieldset class="idcard c2" id="id2" hidden><legend><b>P2</b> JOGADOR 2</legend>
+        <label for="n2">Nome completo</label><input id="n2" maxlength="60" autocomplete="off" placeholder="Nome e sobrenome">
+        <label for="t2">Turma</label><input id="t2" maxlength="12" autocomplete="off" placeholder="Ex.: 6º A">
+        <label class="chk"><input type="checkbox" id="r2"><span>🔊 Quero ouvir as perguntas em voz alta</span></label>
+      </fieldset>
+      <p class="err" id="iderr" role="alert" hidden></p>
+      <div class="row-mini"><button type="button" class="btn ghost" data-back="mode">VOLTAR</button><button class="btn gold">CONTINUAR</button></div>
+    </form>
+  </section>
+
+  <section class="scene" id="sc-char">
+    <h2 id="char-title">ESCOLHA SEU PERSONAGEM</h2>
+    <div class="chars" id="chars"></div>
+    <button class="btn gold" id="btn-char-ok">CONFIRMAR</button>
+  </section>
+
+  <section class="scene" id="sc-mood">
+    <div class="moodhead" id="mood-head"><b id="mood-badge">P1</b><span id="mood-name">—</span></div>
+    <h2 id="mood-title">COMO VOCÊ ESTÁ SE SENTINDO AGORA?</h2>
+    <p class="tag" id="mood-sub">Toque na carinha. Não vale nota: é só para a gente saber como você chega à aventura.</p>
+    <div class="faces" id="faces"></div>
+  </section>
+
+  <section class="scene" id="sc-turn">
+    <div id="turn-badge">P1</div>
+    <h2 id="turn-title">VEZ DO JOGADOR 1</h2>
+    <canvas id="turn-sprite" width="140" height="160" aria-hidden="true"></canvas>
+    <p id="turn-name">—</p>
+    <p id="turn-sub">—</p>
+    <p id="turn-pass" hidden></p>
+    <ul id="turn-rules" hidden>
+      <li><b>❤ Vida:</b> você tem 3 corações (máx. 5).</li>
+      <li><b>🪙 Moedas:</b> a cada 25 moedas você ganha 1 coração.</li>
+      <li><b>★ Estrelas escondidas:</b> dão 1 escudo que segura 1 dano.</li>
+      <li><b>🚪 Porta dourada ★:</b> leva à fase secreta (bônus!).</li>
+      <li><b>💬 Casos da AURA:</b> responda do jeito que o jogo pedir (barril, balão, porta, bloco…).</li>
+      <li><b>✦ Arma:</b> ao derrotar um chefão você ganha 3 tiros de luz. <b>Não recarrega!</b> (tecla X)</li>
+    </ul>
+    <button class="btn white" id="btn-turn-ok">ESTOU PRONTO</button>
+  </section>
+
+  <section class="scene" id="sc-done">
+    <div id="done-badge">P1</div>
+    <h2 id="done-title">FASE CONCLUÍDA!</h2>
+    <p id="done-name">—</p>
+    <div class="stats" id="done-stats"></div>
+    <p class="fair">⭐ Os pontos do jogo são só diversão: <b>não entram</b> no diagnóstico.</p>
+    <button class="btn white" id="btn-done-ok">CONTINUAR</button>
+  </section>
+
+  <section class="scene" id="sc-shop">
+    <div id="shop-badge">P1</div>
+    <h2 id="shop-title">LOJA DO FINAL</h2>
+    <p id="shop-sub">Suas moedas viram skins e acessórios. É só diversão: <b>não muda a nota</b>.</p>
+    <p id="shop-gift-note" class="giftnote" hidden></p>
+    <div class="shop-body">
+      <div class="shop-prev"><div id="shop-cv"></div><div id="shop-wallet">🪙 0</div></div>
+      <div class="shop-list"><h3>Skins</h3><div id="shop-skins" class="shop-grid"></div><h3>Acessórios</h3><div id="shop-accs" class="shop-grid"></div>
+        <div id="shop-gift" hidden><h3>🎁 Presentear <span id="gift-name"></span></h3><div id="shop-gifts" class="shop-grid"></div></div></div>
+    </div>
+    <button class="btn gold" id="btn-shop-done">CONTINUAR</button>
+  </section>
+
+  <section class="scene" id="sc-results">
+    <div id="res-wrap"></div>
+  </section>
+
+  <section class="scene" id="sc-pause">
+    <h2>PAUSADO</h2>
+    <button class="btn gold" id="btn-resume">CONTINUAR</button>
+    <button class="btn ghost" id="btn-photo">📷 TIRAR FOTO DA TELA</button>
+    <button class="btn ghost" id="btn-quit">ENCERRAR DEMO</button>
+  </section>
+</main>
+
+<div id="rotate" role="alert"><div class="phone" aria-hidden="true"></div><p>Gire o aparelho para a <b>horizontal</b> para jogar.</p></div>
+<div id="locked" hidden role="alert"><div><h2 id="lk-title">Licença suspensa</h2><p id="lk-msg">—</p><button class="btn gold" id="lk-btn">VOLTAR AO LOGIN</button></div></div>
+<script type="module" src="/app/js/main.js"></script>
+</body>
+</html>

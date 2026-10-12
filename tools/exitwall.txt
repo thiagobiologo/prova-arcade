@@ -1,0 +1,38 @@
+  _exitWall(x, g, f) {
+    // a SAÍDA é uma porta na parede do fundo da fase (rocha/gelo/pedra/raízes): ao entrar, a tela fecha e passa para a próxima
+    const th = this.A.th, key = th.key, on = g.enabled, X = g.x, fy = g.y + g.h, cx = X + g.w / 2, top = this.cam.y - 14;
+    const x0 = X - 52, x1 = Math.max(X + g.w + 120, this.L.cols * TS + 6);
+    const P = { train: ['#9aa3b4', '#4c5568', '#e9eef8', '#fff1b0'], s1: ['#3a3898', '#14124a', '#cfeaff', '#9ff5ff'], s2: ['#c58a52', '#6a3a22', '#f3deb0', '#ffe9a8'], s3: ['#1e6a5c', '#06241f', '#7fe0b0', '#9dffb8'] }[key];
+    x.save();
+    // massa da parede, do chão até o topo da tela
+    const gr = x.createLinearGradient(x0, 0, x1, 0); gr.addColorStop(0, P[0]); gr.addColorStop(0.35, P[1]); gr.addColorStop(1, shade(P[1], -0.35)); x.fillStyle = gr;
+    x.beginPath(); x.moveTo(x0 + 8, fy + 2); x.lineTo(x0, fy - 38); x.lineTo(x0 + 12, fy - 86); x.lineTo(x0 + 3, fy - 130); x.lineTo(x0 + 10, top); x.lineTo(x1, top); x.lineTo(x1, fy + 2); x.closePath(); x.fill();
+    x.strokeStyle = 'rgba(8,4,24,.9)'; x.lineWidth = 2; x.stroke();
+    x.save(); x.clip(); x.strokeStyle = 'rgba(0,0,0,.22)'; x.lineWidth = 1.2;
+    for (let yy = fy - 14; yy > top; yy -= 15) { x.beginPath(); x.moveTo(x0, yy); x.lineTo(x1, yy); x.stroke(); for (let xx = x0 + ((yy / 15 | 0) % 2 ? 9 : 22); xx < x1; xx += 26) { x.beginPath(); x.moveTo(xx, yy); x.lineTo(xx, yy - 15); x.stroke(); } }
+    x.fillStyle = 'rgba(255,255,255,.08)'; for (let yy = fy - 30; yy > top; yy -= 44) x.fillRect(x0 + 6, yy, x1 - x0, 5);
+    x.restore();
+    // estalactites / raízes na borda de cima
+    for (let xx = x0 + 10; xx < x1; xx += 17) { const len = 8 + ((xx * 7) % 22); x.fillStyle = shade(P[1], 0.12); x.strokeStyle = 'rgba(8,4,24,.8)'; x.lineWidth = 1; x.beginPath(); x.moveTo(xx - 6, top + 14); x.lineTo(xx, top + 14 + len); x.lineTo(xx + 6, top + 14); x.closePath(); x.fill(); x.stroke(); }
+    // moldura da porta (arco)
+    const aw = g.w + 14, ax = cx - aw / 2, at = fy - g.h - 8, rad = aw / 2;
+    const fr = x.createLinearGradient(ax, 0, ax + aw, 0); fr.addColorStop(0, P[2]); fr.addColorStop(0.5, shade(P[2], -0.18)); fr.addColorStop(1, shade(P[2], -0.5)); x.fillStyle = fr; x.strokeStyle = 'rgba(8,4,24,.9)'; x.lineWidth = 1.8;
+    x.beginPath(); x.moveTo(ax - 3, fy + 2); x.lineTo(ax - 3, at + rad); x.arc(cx, at + rad, rad + 3, Math.PI, 0); x.lineTo(ax + aw + 3, fy + 2); x.closePath(); x.fill(); x.stroke();
+    // vão da porta
+    const ix = cx - g.w / 2, iw = g.w, it = at + 6, ir = iw / 2;
+    x.beginPath(); x.moveTo(ix, fy + 2); x.lineTo(ix, it + ir); x.arc(cx, it + ir, ir, Math.PI, 0); x.lineTo(ix + iw, fy + 2); x.closePath();
+    const dg = x.createLinearGradient(0, it, 0, fy); if (on) { dg.addColorStop(0, '#ffffff'); dg.addColorStop(0.45, P[3]); dg.addColorStop(1, shade(P[3], -0.35)); } else { dg.addColorStop(0, '#2a2640'); dg.addColorStop(1, '#0c0a1c'); }
+    x.fillStyle = dg; x.fill(); x.stroke();
+    if (on) {   // luz saindo da porta, faíscas e degrau iluminado
+      this._glow(x, cx, fy - g.h * 0.45, 46, th.glow, 0.5 + 0.12 * Math.sin(f / 12));
+      x.save(); x.beginPath(); x.moveTo(ix, fy + 2); x.lineTo(ix, it + ir); x.arc(cx, it + ir, ir, Math.PI, 0); x.lineTo(ix + iw, fy + 2); x.closePath(); x.clip();
+      x.strokeStyle = 'rgba(255,255,255,.55)'; x.lineWidth = 1.2; for (let k = 0; k < 4; k++) { x.beginPath(); for (let yy = 0; yy <= g.h; yy += 3) { const xx = cx + Math.sin(yy / 6 - f / 10 + k * 1.7) * (iw * 0.28); if (yy === 0) x.moveTo(xx, it + yy); else x.lineTo(xx, it + yy); } x.stroke(); }
+      x.restore(); x.fillStyle = 'rgba(255,255,230,.35)'; x.beginPath(); x.moveTo(ix + 2, fy + 2); x.lineTo(ix - 16, fy + 2); x.lineTo(ix + 4, fy - 6); x.fill();
+    } else {   // trancada: grade pesada e luz vermelha
+      x.fillStyle = '#3a3a52'; for (let k = 0; k < 4; k++) x.fillRect(ix + 3 + k * 8, it + 4, 3, g.h - 4); x.fillStyle = '#ff4d5e'; x.shadowColor = '#ff4d5e'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, fy - g.h * 0.4, 2.8, 0, 6.3); x.fill(); x.shadowBlur = 0;
+    }
+    // chave do arco
+    x.fillStyle = on ? P[3] : '#6b6fa0'; x.beginPath(); x.moveTo(cx, at - 7); x.lineTo(cx + 4, at - 1); x.lineTo(cx, at + 5); x.lineTo(cx - 4, at - 1); x.closePath(); x.fill(); x.stroke();
+    if (on) { const k = Math.sin(f / 8); x.fillStyle = '#ffe36b'; x.strokeStyle = 'rgba(40,20,0,.7)'; x.lineWidth = 1.2; x.beginPath(); x.moveTo(cx - 6, at - 24 + k * 2); x.lineTo(cx + 6, at - 24 + k * 2); x.lineTo(cx, at - 15 + k * 2); x.closePath(); x.stroke(); x.fill(); x.font = '700 7px "Lilita One", system-ui'; x.textAlign = 'center'; x.fillStyle = '#fff6b0'; x.fillText('SAÍDA', cx, at - 28 + k * 2); }
+    x.restore();
+  }

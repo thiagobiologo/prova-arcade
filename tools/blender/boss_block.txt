@@ -1,0 +1,84 @@
+    def colossus(kind):
+        r = fresh(); rock = M('rk', H('#2e2560'), 0.5, 0.05, coat=0.15); rock2 = M('r2', H('#4c3d8f'), 0.4, 0.05, coat=0.25)
+        gc = {'idle': '#7df9ff', 'tele': '#ff3355', 'stun': '#3a4468'}[kind]; k = 0.2 if kind == 'stun' else (9.0 if kind == 'tele' else 5.0)
+        glow = M('gw', H(gc), 0.1, 0, emit=gc, emit_k=k, coat=0); ec = '#ffe36b' if kind != 'stun' else '#3a4468'
+        eyem = M('ey', H(ec), 0.1, 0, emit=ec, emit_k=10.0 if kind != 'stun' else 0.2, coat=0)
+        cy = M('cy', H('#5fe8ff'), 0.08, 0, emit='#2fd0ff' if kind != 'tele' else '#ff3355', emit_k=2.6 if kind != 'tele' else 6.0, coat=1.0)
+        mg = M('mg', H('#ff6be0'), 0.08, 0, emit='#ff3fd0' if kind != 'tele' else '#ff7a22', emit_k=2.6 if kind != 'tele' else 6.0, coat=1.0)
+        r.rotation_euler = (0, 0, R(-32)); lean = R(18) if kind == 'stun' else 0
+        tor = S.empty(r, (0, 0, 0.9)); tor.rotation_euler = (0, lean, 0)
+        S.box(tor, (0, 0, 0.45), (1.0, 1.55, 1.05), rock, bevel=0.22); S.box(tor, (0, 0, -0.2), (0.8, 1.1, 0.5), rock2, bevel=0.15)
+        S.sphere(tor, (0.5, 0, 0.5), 0.2, (0.5, 1, 1), glow)
+        for (y, z, h) in [(-0.5, 0.2, 0.5), (0.5, 0.3, 0.6), (-0.3, 0.8, 0.4), (0.3, 0.75, 0.45)]:
+            S.box(tor, (0.5, y, z), (0.04, 0.05, h), glow, rot=(R(10 * y), 0, R(20 * y)), bevel=0.01)
+        head = S.empty(tor, (0.1, 0, 1.25)); head.rotation_euler = (0, R(20) if kind == 'stun' else R(-6), 0)
+        S.box(head, (0, 0, 0.1), (0.62, 0.7, 0.58), rock2, bevel=0.15)
+        for sd in (-1, 1):
+            S.box(head, (0.33, sd * 0.19, 0.16), (0.1, 0.24, 0.1), eyem, rot=(0, 0, R(sd * 18)), bevel=0.03)
+            S.box(head, (0.34, sd * 0.2, 0.3), (0.08, 0.3, 0.07), rock, rot=(0, 0, R(-sd * 24)), bevel=0.02)
+        S.box(head, (0.33, 0, -0.08), (0.08, 0.34, 0.1), rock, bevel=0.03)
+        for (y, hh, a) in [(-0.6, 1.0, -22), (-0.3, 1.3, -8), (0.3, 1.2, 8), (0.6, 0.9, 22)]:
+            S.cone(tor, (-0.35, y, 1.0 + hh * 0.35), 0.17, 0.0, hh, cy if (y > 0) else mg, rot=(R(a), R(-14), 0))
+        for sd in (-1, 1):
+            sh = S.empty(tor, (0, sd * 1.0, 0.85)); S.sphere(sh, (0, 0, 0), 0.42, (1, 1, 0.9), rock2)
+            for q in range(3):
+                S.cone(sh, (0, sd * 0.12 * q, 0.35 + q * 0.12), 0.1, 0.0, 0.5 + 0.1 * q, cy if sd < 0 else mg, rot=(R(sd * (14 + q * 10)), 0, 0))
+            up = R(-150) if kind == 'tele' else (R(-8) if kind == 'stun' else R(-24))
+            sh.rotation_euler = (0, up, 0); S.cyl(sh, (0, 0, -0.5), 0.2, 0.9, rock); S.sphere(sh, (0.05, 0, -1.08), 0.38, (1, 1, 1), rock2); S.sphere(sh, (0.22, 0, -1.08), 0.1, (1, 1, 1), glow)
+        for sd in (-1, 1):
+            S.box(r, (0, sd * 0.38, 0.38), (0.5, 0.5, 0.9), rock, bevel=0.14); S.box(r, (0.14, sd * 0.38, 0.08), (0.7, 0.55, 0.22), rock2, bevel=0.08)
+        cam(1.15, 3.6)
+    def titan(kind):
+        r = fresh(); bone = M('bn', H('#eadfc2'), 0.5, 0, coat=0.15); bone2 = M('b2', H('#bfae88'), 0.55, 0, coat=0.1); dk = M('dk', H('#150c18'), 0.6, 0, coat=0)
+        fc = {'idle': '#ff6a1a', 'tele': '#ff1133', 'stun': '#3a3040'}[kind]; k = 0.2 if kind == 'stun' else (10.0 if kind == 'tele' else 7.0)
+        fire = M('fi', H(fc), 0.1, 0, emit=fc, emit_k=k, coat=0); core = M('co', H(fc), 0.1, 0, emit=fc, emit_k=(0.3 if kind == 'stun' else 2.0), coat=0)
+        r.rotation_euler = (0, 0, R(-32)); hunch = R(14) if kind == 'stun' else R(-4)
+        sp = S.empty(r, (0, 0, 0.75)); sp.rotation_euler = (0, hunch, 0)
+        S.sphere(sp, (0, 0, 0.55), 1.0, (0.45, 0.36, 0.62), dk)
+        for i in range(5): S.torus(sp, (0, 0, 0.1 + i * 0.22), 0.5 - abs(i - 2) * 0.05, 0.065, bone, rot=(R(90), 0, 0), scale=(0.95, 1.0, 1.0))
+        S.sphere(sp, (0.12, 0, 0.55), 0.2, (1, 1, 1), core)
+        for i in range(5): S.cone(sp, (-0.42, 0, 0.1 + i * 0.22), 0.07, 0, 0.3, bone2, rot=(0, R(-100), 0))
+        sk = S.empty(sp, (0.25, 0, 1.45)); sk.rotation_euler = (0, R(-14) if kind == 'stun' else R(8), 0)
+        S.sphere(sk, (0, 0, 0.1), 1.0, (0.55, 0.5, 0.46), bone)
+        op = 0.28 if kind == 'tele' else 0.06
+        jw = S.empty(sk, (0.2, 0, -0.18)); jw.rotation_euler = (0, R(op * 120), 0); S.box(jw, (0.2, 0, -0.05), (0.5, 0.42, 0.13), bone2, bevel=0.05)
+        for i in range(6):
+            S.cone(jw, (0.36, (i - 2.5) * 0.065, 0.06), 0.032, 0, 0.14, bone, rot=(0, 0, 0)); S.cone(sk, (0.48, (i - 2.5) * 0.065, -0.15), 0.032, 0, 0.14, bone, rot=(R(180), 0, 0))
+        for sd in (-1, 1):
+            S.sphere(sk, (0.4, sd * 0.2, 0.18), 1.0, (0.17, 0.16, 0.17), dk); S.sphere(sk, (0.52, sd * 0.2, 0.18), 0.1, (0.6, 1, 1.2), fire)
+            S.box(sk, (0.42, sd * 0.2, 0.38), (0.1, 0.32, 0.07), bone2, rot=(0, 0, R(-sd * 26)), bevel=0.02)
+            h1 = S.empty(sk, (-0.05, sd * 0.38, 0.4)); h1.rotation_euler = (R(sd * -35), 0, 0); S.cone(h1, (0, 0, 0.35), 0.15, 0.04, 0.8, bone); S.cone(h1, (0.05, 0, 0.9), 0.05, 0.0, 0.4, bone, rot=(0, R(-25), 0))
+        up = R(-95) if kind == 'tele' else R(-22)
+        for sd in (-1, 1):
+            sh = S.empty(sp, (0, sd * 0.78, 1.1)); sh.rotation_euler = (0, up, 0); S.sphere(sh, (0, 0, 0), 0.2, (1, 1, 1), bone2)
+            S.cyl(sh, (0, 0, -0.5), 0.09, 1.0, bone); S.sphere(sh, (0, 0, -1.02), 0.2, (1, 1, 0.9), bone)
+            for q in (-1, 0, 1): S.cone(sh, (0.2, q * 0.12, -1.15), 0.055, 0, 0.42, bone, rot=(0, R(150), 0))
+        for sd in (-1, 1):
+            S.cyl(r, (0, sd * 0.32, 0.38), 0.11, 0.8, bone); S.sphere(r, (0.1, sd * 0.32, 0.04), 1.0, (0.3, 0.16, 0.1), bone)
+        cam(1.1, 3.5)
+    def hydra(kind):
+        r = fresh(); jel = M('jl', H('#a82ae0'), 0.2, 0, emit='#8a14c8', emit_k=0.5, coat=1.0); belly = M('bl', H('#e86bff'), 0.25, 0, emit='#c030e8', emit_k=0.4, coat=0.6)
+        gc = '#7dffa3' if kind != 'stun' else '#3a4a40'; glow = M('gl', H(gc), 0.1, 0, emit=gc, emit_k=(6.0 if kind != 'stun' else 0.2), coat=0)
+        mouth = M('mo', H('#1a0620'), 0.4, 0, coat=0); inner = M('in', H('#ff7a22'), 0.1, 0, emit='#ff7a22', emit_k=(6.0 if kind == 'tele' else 0.5), coat=0)
+        tooth = M('th', H('#ffffff'), 0.2, 0, coat=0.5); spike = M('sp', H('#2a0a40'), 0.3, 0.2, coat=0.3)
+        r.rotation_euler = (0, 0, R(-30)); S.sphere(r, (-0.1, 0, 0.7), 1.0, (0.95, 0.9, 0.7), jel, 48, 24); S.sphere(r, (0.3, 0, 0.5), 1.0, (0.55, 0.6, 0.45), belly)
+        for i in range(7): S.cone(r, (-0.6 + (i % 3) * 0.22, (i - 3) * 0.24, 1.2), 0.11, 0, 0.45 + (i % 2) * 0.15, spike, rot=(R((i - 3) * 9), R(-10), 0))
+        cfg = [(-0.62, 0.55, 1.5), (0.0, 0.2 if kind != 'tele' else 0.0, 2.0), (0.62, 0.55, 1.5)]
+        for i, (y, lean, h) in enumerate(cfg):
+            droop = kind == 'stun'
+            n1 = S.empty(r, (0.0, y, 0.95)); n1.rotation_euler = (R(y * -25), R(-40 * lean if not droop else 50), 0)
+            S.cyl(n1, (0, 0, h * 0.28), 0.2, h * 0.56, jel)
+            n2 = S.empty(n1, (0, 0, h * 0.56)); n2.rotation_euler = (0, R(35 if not droop else 20), 0); S.cyl(n2, (0, 0, h * 0.2), 0.17, h * 0.42, jel)
+            hx = S.empty(n2, (0, 0, h * 0.42)); hx.rotation_euler = (0, R(-30 if not droop else 40), 0)
+            S.sphere(hx, (0.08, 0, 0.0), 0.36, (1.1, 0.95, 0.9), jel)
+            big = (kind == 'tele' and i == 1); op = 0.3 if big else 0.08
+            jw = S.empty(hx, (0.12, 0, -0.1)); jw.rotation_euler = (0, R(op * 100), 0); S.sphere(jw, (0.2, 0, -0.04), 1.0, (0.32, 0.26, 0.09), belly)
+            S.sphere(hx, (0.3, 0, -0.04), 1.0, (0.2, 0.2, 0.06 + op * 0.5), mouth)
+            if big: S.sphere(hx, (0.28, 0, -0.02), 0.13, (1, 1, 1), inner)
+            for t in range(4):
+                S.cone(hx, (0.42, (t - 1.5) * 0.09, 0.0), 0.03, 0, 0.14, tooth, rot=(0, R(180), 0)); S.cone(jw, (0.34, (t - 1.5) * 0.09, 0.02), 0.03, 0, 0.14, tooth)
+            for sd in (-1, 1):
+                S.sphere(hx, (0.3, sd * 0.17, 0.16), 0.1, (0.6, 1, 0.7), glow); S.box(hx, (0.3, sd * 0.17, 0.3), (0.1, 0.3, 0.06), spike, rot=(0, 0, R(-sd * 26)), bevel=0.02)
+                S.cone(hx, (-0.05, sd * 0.22, 0.34), 0.07, 0, 0.36, spike, rot=(R(sd * -30), 0, 0))
+        for k in range(6): S.sphere(r, (-0.3 - k * 0.1, math.sin(k * 1.3) * 0.3, 0.55 + (k % 2) * 0.12), 0.07, (1, 1, 1), glow)
+        cam(1.15, 3.9)

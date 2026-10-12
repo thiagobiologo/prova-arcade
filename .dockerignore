@@ -1,0 +1,9 @@
+data
+data_demo
+tools
+docs
+node_modules
+*.log
+.git
+CARTAZ_QR_TESTE_WIFI.html
+*.bat

@@ -1,0 +1,14 @@
+# Exemplo para Render.com (precisa de plano com disco persistente para não perder as licenças a cada deploy)
+services:
+  - type: web
+    name: prova-arcade
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: TRUST_PROXY
+        value: "1"
+    disk:
+      name: dados
+      mountPath: /srv/data
+      sizeGB: 1

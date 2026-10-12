@@ -1,0 +1,11 @@
+name: checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Sintaxe + validação de 800 fases e 300 salas secretas
+        run: node tools/check.mjs

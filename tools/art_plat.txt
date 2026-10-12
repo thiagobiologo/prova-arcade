@@ -1,0 +1,14 @@
+function texPlat(th) {
+  const [t, c] = cv(TP, 32); c.fillStyle = 'rgba(0,0,0,.28)'; rr(c, 2, 12, TP - 4, 18, 9); c.fill();
+  c.fillStyle = lg(c, 0, 2, 0, 24, [[0, shade(th.plat, 0.35)], [0.35, th.plat], [1, th.platDark]]); rr(c, 0, 0, TP, 24, 10); c.fill();
+  c.save(); rr(c, 0, 0, TP, 24, 10); c.clip();
+  if (th.key === 'train') { for (let x = 0; x < TP; x += 16) { c.fillStyle = 'rgba(0,0,0,.16)'; c.fillRect(x + 15, 0, 1.6, 24); } c.strokeStyle = 'rgba(120,70,20,.4)'; c.lineWidth = 1; for (let i = 0; i < 6; i++) { const y = 5 + i * 3.2; c.beginPath(); c.moveTo(2, y); c.bezierCurveTo(20, y + 1.5, 40, y - 1.5, 62, y + 0.5); c.stroke(); } }
+  else if (th.key === 's1') { c.fillStyle = 'rgba(255,255,255,.13)'; c.beginPath(); c.moveTo(0, 24); c.lineTo(18, 0); c.lineTo(30, 0); c.lineTo(12, 24); c.fill(); c.beginPath(); c.moveTo(34, 24); c.lineTo(52, 0); c.lineTo(60, 0); c.lineTo(42, 24); c.fill(); c.shadowColor = th.accent; c.shadowBlur = 5; c.strokeStyle = th.accent; c.globalAlpha = 0.85; c.lineWidth = 1.6; c.beginPath(); c.moveTo(6, 17); c.lineTo(TP - 6, 17); c.stroke(); }
+  else if (th.key === 's2') { c.strokeStyle = 'rgba(120,80,40,.45)'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(0, 10); c.lineTo(TP, 10); c.stroke(); for (let x = 8; x < TP; x += 14) { c.beginPath(); c.moveTo(x, 4); c.lineTo(x, 10); c.moveTo(x + 7, 10); c.lineTo(x + 7, 17); c.stroke(); } c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(0, 0, TP, 5); }
+  else { c.fillStyle = 'rgba(30,140,70,.6)'; for (let i = 0; i < 7; i++) { c.beginPath(); c.arc(4 + i * 9, 1 + ((i * 5) % 4), 4 + ((i * 3) % 3), 0, 6.3); c.fill(); } c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 1.2; for (let i = 0; i < 4; i++) { c.beginPath(); c.ellipse(10 + i * 16, 15, 5, 3, 0, 0, 6.3); c.stroke(); } }
+  c.restore(); c.save(); c.strokeStyle = 'rgba(0,0,0,.38)'; c.lineWidth = 2; rr(c, 0, 0, TP, 24, 10); c.stroke(); c.restore();
+  c.fillStyle = 'rgba(255,255,255,.45)'; rr(c, 6, 3, TP - 12, 3.5, 2); c.fill();
+  if (th.key !== 's1') { c.fillStyle = th.accent; c.globalAlpha = 0.85; rr(c, 10, 17, TP - 20, 3, 1.5); c.fill(); c.globalAlpha = 1; }
+  [10, TP - 10].forEach((x) => { c.fillStyle = shade(th.platDark, -0.3); c.beginPath(); c.arc(x, 12, 2.4, 0, 6.3); c.fill(); c.fillStyle = 'rgba(255,255,255,.4)'; c.beginPath(); c.arc(x - 0.6, 11.3, 1, 0, 6.3); c.fill(); });
+  return t;
+}

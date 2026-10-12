@@ -1,0 +1,182 @@
+/* Banco REFEITO a partir do GUIA DO CURRÍCULO PRIORIZADO 2026 (SEDUC-SP · Ciências · Anos Finais · 6º ano, Vida e Evolução).
+ * Para cada habilidade o guia traz: Aprendizagem Essencial (AE), habilidade priorizada, "Descritor SARESP" (o que o aluno deve saber fazer),
+ * e as aulas. Cada SLOT abaixo mira um descritor/componente da habilidade; as perguntas são SITUAÇÕES (aplicação/transferência), não fatos soltos.
+ *   EF06CI06 (AE6)  níveis de organização: célula → tecido → órgão → sistema → organismo
+ *   EF06CI07 (AE7, PRIORIZADA)  sistema nervoso: SNC/SNP, neurônio, sentidos, coordenação de ações motoras e sensoriais
+ *   EF06CI08 (AE7)  visão: estrutura do olho, formação da imagem, luz e cores
+ *   EF06CI09 (AE8, PRIORIZADA)  locomotor: ossos, músculos e comando nervoso  (itens em items.js / bank_extra.js)
+ *   EF06CI10 (AE7)  efeitos de substâncias psicoativas no sistema nervoso      (itens em items.js / bank_extra.js)
+ * TODO texto precisa de revisão por professor de Ciências antes de uso com alunos. © Thiago Silva. */
+const J = (ctx, stem, ok, a, b) => ({ ctx, stem, opts: [{ t: ok[0], ok: true, l: ok[1] }, { t: a[0], m: a[1], l: a[2] }, { t: b[0], m: b[1], l: b[2] }] });
+
+export const GUIA_SKILLS = {
+  EF06CI06: { code: 'EF06CI06', short: 'Níveis de organização do corpo', ae: 'AE6', priorizada: false,
+    text: 'Concluir, com base na análise de ilustrações e/ou modelos (físicos ou digitais), que os organismos são um complexo arranjo de sistemas com diferentes níveis de organização (células → tecidos → órgãos → sistemas → organismo).' },
+  EF06CI07: { code: 'EF06CI07', short: 'Sistema nervoso e sentidos', ae: 'AE7', priorizada: true,
+    text: 'Justificar o papel do sistema nervoso na coordenação das ações motoras e sensoriais do corpo, com base na análise de suas estruturas básicas e respectivas funções.' },
+};
+
+export const GUIA_MISC = {
+  O1: 'Confunde órgão com sistema: acha que um único órgão já é um sistema completo.',
+  O2: 'Acha que um órgão é feito de um único tipo de tecido ou de célula.',
+  O3: 'Troca a ordem dos níveis de organização (célula, tecido, órgão, sistema, organismo).',
+  O4: 'Inverte a lógica da hierarquia: acha que quanto maior a estrutura, mais simples o nível.',
+  O5: 'Confunde tecido com órgão: acha que um conjunto de células iguais já é o órgão inteiro.',
+  O6: 'Usa o tamanho ou a visibilidade como critério para classificar o nível de organização.',
+  O7: 'Acha que órgãos e sistemas funcionam isolados, sem integração entre si.',
+  O8: 'Acha que a falta ou a falha de um órgão não afeta o sistema nem o resto do corpo.',
+  O9: 'Agrupa órgãos em sistemas por proximidade no corpo, e não pela função que exercem em conjunto.',
+  O10: 'Agrupa órgãos em sistemas pela aparência (forma ou tamanho), e não pela função em conjunto.',
+  S1: 'Atribui à medula espinal funções do encéfalo (pensar, lembrar, falar).',
+  S2: 'Atribui aos nervos periféricos funções do encéfalo (ideias, memória, decisões).',
+  S3: 'Acha que os músculos funcionam sem receber sinais dos nervos.',
+  S4: 'Acha que só o cérebro move as pernas e que a coluna não participa da comunicação.',
+  S5: 'Atribui aos nervos a função de guardar memórias.',
+  S6: 'Atribui aos nervos a produção de calor ou de movimento, em vez de conduzir sinais.',
+  S7: 'Confunde o neurônio com célula de reserva (tecido adiposo).',
+  S8: 'Confunde o neurônio com célula muscular (acha que ele se contrai).',
+  S9: 'Ignora a parte autônoma do sistema nervoso: acha que tudo no corpo é controlado de forma voluntária.',
+  S10: 'Atribui aos ossos a regulação de funções involuntárias do corpo.',
+  S11: 'Inverte o sentido dos sinais: confunde informação sensorial com comando motor.',
+  S12: 'Acha que o sinal nervoso segue um só sentido, sem retorno ao corpo.',
+  S13: 'Acha que o órgão do sentido interpreta sozinho, sem participação do encéfalo.',
+  S14: 'Acha que o encéfalo ou o nervo cria o estímulo (cheiro, som), em vez de interpretá-lo.',
+  S17: 'Acha que pensar, querer ou ler não depende do sistema nervoso, só dos músculos.',
+  S18: 'Acha que o movimento voluntário acontece sem ordem do sistema nervoso.',
+  S19: 'Confunde partes do sistema nervoso (nervos, músculos, medula) quanto à posição e à função.',
+  Z1: 'Acha que o cristalino guarda imagens, como uma memória fotográfica.',
+  Z2: 'Confunde retina com íris: acha que ela regula a quantidade de luz que entra.',
+  Z3: 'Confunde a retina com estruturas de proteção do olho (córnea, pálpebra).',
+  Z4: 'Acha que a córnea produz as imagens que a retina envia ao encéfalo.',
+  Z5: 'Acha que o nervo óptico recebe imagens sem depender da luz que chega ao olho.',
+  Z6: 'Troca as funções da íris, do cristalino e da retina.',
+  Z7: 'Embaralha as funções das estruturas do olho (íris, cristalino, retina).',
+  Z8: 'Acha que, com mais luz, a pupila aumenta (inverte a reação da pupila).',
+  Z9: 'Acha que a pupila não muda de tamanho e que o olho não reage à luz.',
+  Z10: 'Acha que a cor é uma propriedade que desaparece no escuro, e não depende da luz que chega ao olho.',
+  Z11: 'Acha que o olho "pinta" os objetos com a cor, em vez de captar a luz refletida por eles.',
+};
+
+/* 8 slots novos (formas A–D). Os demais slots (visão/captação, locomotor, psicoativas) vêm do banco anterior, reindexados em items.js. */
+export const GUIA_SLOTS = {
+  /* ===== EF06CI06 · c0 · reconhecer os níveis de organização ===== */
+  n0: { skill: 'EF06CI06', forms: {
+    A: J('Ao observar ao microscópio um pedaço da pele da mão, Lia vê muitas células parecidas, unidas, realizando a mesma função de revestimento.', 'Em qual nível de organização está esse conjunto de células parecidas que realizam a mesma função?',
+      ['Tecido: um conjunto de células semelhantes que trabalham juntas na mesma função.', 'Tecido'],
+      ['Sistema: vários órgãos diferentes que atuam em conjunto para realizar uma grande função do corpo.', 'O1', 'Sistema'], ['Órgão: a estrutura completa, formada por tecidos diferentes, como a mão inteira de Lia.', 'O5', 'Órgão']),
+    B: J('Uma professora monta no quadro a sequência dos níveis de organização do corpo humano, do mais simples ao mais complexo, e pede aos alunos que confiram.', 'Qual ordem representa corretamente esses níveis, do mais simples ao mais complexo?',
+      ['Célula, tecido, órgão, sistema e organismo, cada nível reunindo estruturas do nível anterior.', 'Célula → … → organismo'],
+      ['Célula, órgão, tecido, sistema e organismo, pois o órgão é menor que o tecido que o compõe.', 'O3', 'Órgão antes do tecido'], ['Tecido, célula, sistema, órgão e organismo, começando pela estrutura formada de muitas partes.', 'O3', 'Tecido antes da célula']),
+    C: J('O estômago é formado por tecido muscular, tecido epitelial e tecido nervoso, todos trabalhando para a digestão do alimento.', 'Por que o estômago é classificado como órgão, e não como tecido?',
+      ['Porque é formado por diferentes tecidos que se organizam para realizar uma função específica.', 'Vários tecidos'],
+      ['Porque é formado por um único tipo de célula, que se repete por toda a sua extensão e executa a mesma função.', 'O2', 'Um tipo de célula'], ['Porque é maior que os tecidos e pode ser visto sem o auxílio de nenhum instrumento de aumento.', 'O6', 'Só pelo tamanho']),
+    D: J('Em uma atividade, os termos neurônio, tecido nervoso, cérebro e sistema nervoso aparecem embaralhados em fichas.', 'Qual alternativa organiza esses termos do nível mais simples para o mais complexo?',
+      ['Neurônio, tecido nervoso, cérebro e sistema nervoso, cada um reunindo o anterior.', 'Neurônio → sistema'],
+      ['Neurônio, cérebro, tecido nervoso e sistema nervoso, pois o cérebro é menor que o tecido.', 'O3', 'Cérebro antes do tecido'], ['Sistema nervoso, cérebro, tecido nervoso e neurônio, do mais complexo ao mais simples.', 'O4', 'Ordem invertida']),
+  } },
+  /* ===== EF06CI06 · c1 · classificar exemplos (órgão, tecido, sistema) ===== */
+  n1: { skill: 'EF06CI06', forms: {
+    A: J('Em um jogo de cartas de Ciências, Davi precisa classificar o coração como célula, tecido, órgão ou sistema.', 'Como o coração deve ser classificado?',
+      ['Órgão, pois reúne tecidos diferentes, como o muscular cardíaco, e cumpre uma função: bombear o sangue.', 'Órgão'],
+      ['Sistema, pois o coração sozinho já realiza toda a circulação do sangue por todas as partes do corpo humano.', 'O1', 'Sistema'], ['Tecido, pois o coração é feito de músculo e, por isso, é considerado um único tecido muscular completo.', 'O5', 'Tecido']),
+    B: J('Mariana lê que o sistema digestório é formado por boca, esôfago, estômago e intestinos.', 'Por que esse conjunto de órgãos é chamado de sistema?',
+      ['Porque vários órgãos diferentes atuam de forma integrada para realizar a digestão dos alimentos.', 'Órgãos integrados'],
+      ['Porque todos esses órgãos são feitos do mesmo tipo de tecido e de célula, com exatamente a mesma estrutura.', 'O2', 'Mesmo tecido'], ['Porque cada um deles digere o alimento sozinho, sem depender dos demais órgãos para realizar essa função.', 'O7', 'Cada um sozinho']),
+    C: J('Um aluno afirma: "O osso é um tecido, o esqueleto é um órgão e o fêmur é um sistema."', 'Qual é a correção mais adequada para essa afirmação?',
+      ['O fêmur é um órgão, feito de tecido ósseo; o conjunto de ossos e articulações forma o sistema esquelético.', 'Fêmur: órgão'],
+      ['Está correta, pois quanto maior é a estrutura do corpo, mais simples é o seu nível de organização biológica.', 'O4', 'Maior = mais simples'], ['O fêmur é uma célula, o osso é um órgão e o esqueleto é um tecido, do menor ao maior nível de todos.', 'O3', 'Níveis trocados']),
+    D: J('Ao estudar a pele, Rafael anota: "pele = conjunto de células iguais, sem outros componentes".', 'Qual observação científica corrige a anotação de Rafael?',
+      ['A pele é um órgão: reúne tecidos diferentes, como epitelial, conjuntivo e nervoso, com funções de proteção e de sensação.', 'Pele: órgão'],
+      ['A pele é um sistema completo, pois sozinha realiza todas as funções de que o corpo precisa para viver e se manter protegido.', 'O1', 'Pele: sistema'], ['A pele é uma única célula muito grande, que cobre todo o corpo da pessoa e realiza todas as funções de proteção.', 'O2', 'Uma célula grande']),
+  } },
+  /* ===== EF06CI06 · c2 · sistemas = órgãos integrados ===== */
+  n2: { skill: 'EF06CI06', forms: {
+    A: J('Depois de correr, Pedro sente o coração acelerado e respira mais rápido. O professor diz que sistemas diferentes atuam juntos nesse momento.', 'O que essa situação mostra sobre a organização do corpo humano?',
+      ['Que sistemas diferentes, como o circulatório e o respiratório, cooperam e dependem um do outro.', 'Sistemas cooperam'],
+      ['Que cada sistema funciona de forma isolada e só precisa de si mesmo para cumprir a sua tarefa.', 'O7', 'Cada um isolado'], ['Que só o coração é importante, pois os demais órgãos não participam desse tipo de esforço físico do corpo.', 'O8', 'Só o coração']),
+    B: J('Em um modelo digital do corpo, os alunos arrastam estômago, intestino e fígado para o mesmo grupo, formando um sistema.', 'Qual critério justifica agrupar esses órgãos em um mesmo sistema?',
+      ['Eles atuam em conjunto em uma mesma função geral, nesse caso a digestão e o aproveitamento dos alimentos.', 'Mesma função geral'],
+      ['Eles ficam próximos uns dos outros no corpo, e a proximidade entre eles é o único critério usado para agrupá-los.', 'O9', 'Ficam perto'], ['Eles têm o mesmo formato e o mesmo tamanho, o que os torna, por semelhança de aparência, parte do mesmo sistema.', 'O10', 'Mesmo formato']),
+    C: J('Uma pessoa precisou retirar parte do intestino por causa de uma doença e agora precisa de acompanhamento sobre os nutrientes que absorve.', 'Por que a falta de parte de um órgão pode comprometer o sistema inteiro?',
+      ['Porque, em um sistema, os órgãos têm funções complementares, e a falha de um prejudica o conjunto.', 'Funções complementares'],
+      ['Não compromete, pois os outros órgãos do corpo assumem exatamente a mesma função do intestino.', 'O8', 'Outros assumem tudo'], ['Compromete só o local da retirada, sem relação com os demais órgãos que formam esse mesmo sistema do corpo.', 'O7', 'Só o local']),
+    D: J('Ao desenhar o corpo humano, Sofia liga com setas nariz, traqueia e pulmões e escreve ao redor dessas setas a palavra "sistema".', 'Que sistema Sofia representou e qual é a ideia central dessa organização?',
+      ['Sistema respiratório: órgãos diferentes que atuam juntos para levar o ar aos pulmões e permitir a troca de gases.', 'Respiratório: integrado'],
+      ['Sistema digestório: órgãos iguais que, em conjunto, transformam o ar que respiramos em alimento para todas as células.', 'O10', 'Digestório: iguais'], ['Sistema circulatório: um único órgão que bombeia o ar para todos os tecidos do corpo.', 'O1', 'Um órgão só']),
+  } },
+  /* ===== EF06CI07 · c0 · SNC: estruturas e funções ===== */
+  s0: { skill: 'EF06CI07', forms: {
+    A: J('Após uma pancada forte na cabeça, um jogador de futebol fica confuso, não lembra do jogo e tem dificuldade para falar.', 'Qual parte do sistema nervoso central foi provavelmente afetada, e por quê?',
+      ['O encéfalo, pois é ele que integra informações, controla a fala e guarda as memórias.', 'Encéfalo'],
+      ['A medula espinal, pois é ela que interpreta a fala e guarda as lembranças da pessoa que sofreu o golpe.', 'S1', 'Medula'], ['Os nervos das pernas, pois são eles que coordenam as ideias e a memória da pessoa.', 'S2', 'Nervos das pernas']),
+    B: J('Em um acidente, a coluna de Tiago foi lesionada nas costas. Ele não sente nem mexe as pernas, embora o cérebro esteja intacto.', 'Por que isso acontece?',
+      ['A medula espinal, que leva sinais entre o encéfalo e o corpo, foi lesionada e a comunicação foi interrompida.', 'Medula interrompida'],
+      ['Os músculos das pernas pararam de se contrair sozinhos, sem qualquer relação com os sinais enviados pelos nervos.', 'S3', 'Músculos sozinhos'], ['O cérebro sozinho move as pernas, então uma lesão na coluna não deveria mudar nada nelas.', 'S4', 'Só o cérebro move']),
+    C: J('Ao ler um livro, Helena resolve um problema, lembra de uma história e decide virar a página.', 'Qual estrutura do sistema nervoso central integra essas atividades?',
+      ['O encéfalo, que reúne as áreas do pensamento, da memória e das decisões.', 'Encéfalo'],
+      ['A medula espinal, que sozinha pensa, lembra e decide, enquanto o encéfalo só protege o crânio.', 'S1', 'Medula decide'], ['Os nervos das mãos, que guardam as lembranças e decidem quando mover o corpo.', 'S2', 'Nervos decidem']),
+    D: J('Um esquema do corpo mostra, dentro do crânio, o encéfalo e, dentro da coluna vertebral, um cordão que desce até a região lombar.', 'Quais são as duas partes do sistema nervoso central mostradas e o que as une?',
+      ['Encéfalo e medula espinal: a medula leva ao encéfalo os sinais do corpo e leva do encéfalo as ordens.', 'Encéfalo + medula'],
+      ['Encéfalo e nervos: os nervos ficam dentro da coluna e são, por isso, o centro de comando de todo o corpo.', 'S19', 'Encéfalo + nervos'], ['Medula e músculos: os músculos ficam dentro da coluna e interpretam os sinais do corpo.', 'S19', 'Medula + músculos']),
+  } },
+  /* ===== EF06CI07 · c1 · SNP, neurônio, autônomo ===== */
+  s1: { skill: 'EF06CI07', forms: {
+    A: J('Ao tocar uma panela quente, Ana retira a mão rapidamente. O sinal percorreu neurônios do braço até a medula e voltou aos músculos.', 'Qual é o papel dos nervos (sistema nervoso periférico) nessa situação?',
+      ['Levar a informação dos receptores da pele ao sistema central e trazer a ordem de volta aos músculos.', 'Levam e trazem sinais'],
+      ['Guardar a memória do calor na própria mão, para que Ana nunca mais encoste em objetos quentes ou perigosos.', 'S5', 'Guardam a memória'], ['Produzir calor no braço, para que os músculos se contraiam e a mão se afaste.', 'S6', 'Produzem calor']),
+    B: J('Um desenho mostra um neurônio com corpo celular, dendritos e um longo prolongamento chamado axônio.', 'Qual é a função geral dessas estruturas do neurônio?',
+      ['Conduzir impulsos nervosos: os dendritos recebem o sinal e o axônio o transmite à célula seguinte.', 'Conduzem o impulso'],
+      ['Armazenar nutrientes e gordura de reserva, como faz o tecido adiposo, que guarda energia para o corpo.', 'S7', 'Guardam nutrientes'], ['Contrair-se para produzir movimento, como fazem as células dos músculos esqueléticos.', 'S8', 'Se contraem']),
+    C: J('Durante uma prova, Caio sente o coração acelerar e a boca secar, sem decidir isso. Uma parte do sistema nervoso regula essas funções involuntárias.', 'Qual parte do sistema nervoso regula esses ajustes automáticos?',
+      ['O sistema nervoso autônomo (simpático e parassimpático), que controla funções involuntárias.', 'Autônomo'],
+      ['O sistema nervoso voluntário apenas, pois só ele controla qualquer função do corpo, até as automáticas.', 'S9', 'Só o voluntário'], ['Os ossos do crânio, que recebem o estresse e mandam os órgãos acelerarem.', 'S10', 'Ossos do crânio']),
+    D: J('Em um esquema, setas azuis levam informação dos olhos e da pele ao encéfalo, e setas vermelhas levam ordens do encéfalo aos músculos.', 'O que as setas azuis e as vermelhas representam?',
+      ['Azuis: informação sensorial indo ao sistema central; vermelhas: comandos motores voltando ao corpo.', 'Azul: sentir · vermelho: mover'],
+      ['Azuis: comandos motores; vermelhas: informação sensorial, pois o encéfalo só recebe ordens do corpo.', 'S11', 'Sentidos invertidos'], ['As duas representam o mesmo tipo de sinal, que segue em um só sentido, sem retorno ao corpo.', 'S12', 'Um só sentido']),
+  } },
+  /* ===== EF06CI07 · c2 · sentidos e ação coordenada ===== */
+  s2: { skill: 'EF06CI07', forms: {
+    A: J('Marta sente cheiro de pão assado e sua boca começa a salivar. A informação sai do nariz e chega ao encéfalo.', 'Qual sequência explica como Marta percebe o cheiro do pão?',
+      ['Receptores do nariz captam as substâncias, enviam sinais por nervos ao encéfalo, que interpreta o cheiro.', 'Nariz → nervo → encéfalo'],
+      ['O cheiro entra pelo nariz e é interpretado pelo próprio nariz, sem nenhuma participação do encéfalo ou dos nervos.', 'S13', 'O nariz interpreta'], ['O encéfalo cria o cheiro e o envia ao nariz, que apenas mostra a Marta o que ela sente.', 'S14', 'Encéfalo cria o cheiro']),
+    B: J('Léo coloca a mão em água muito fria e a retira rapidamente, antes mesmo de pensar no que sentiu.', 'Qual é o papel do sistema nervoso nessa resposta rápida?',
+      ['Receptores da pele enviam sinais que geram, pela medula, uma ordem rápida aos músculos do braço.', 'Receptor → medula → músculo'],
+      ['Os músculos do braço percebem o frio sozinhos e decidem se afastar, sem nenhuma ordem dos nervos.', 'N2', 'Músculos sem nervos'], ['Os ossos do braço sentem o frio e puxam a mão, e por isso o movimento é tão rápido.', 'N1', 'Ossos comandam']),
+    C: J('Uma pessoa tem os ouvidos saudáveis, mas uma lesão no nervo que liga o ouvido ao encéfalo. Ela não percebe os sons.', 'Por que isso ocorre?',
+      ['Os sons são captados pelo ouvido, mas o sinal não chega ao encéfalo, que é quem interpreta os sons.', 'Sinal não chega'],
+      ['O ouvido interpreta os sons sozinho, então a lesão no nervo não poderia alterar a audição da pessoa de modo algum.', 'S13', 'Ouvido interpreta'], ['O nervo produz o som e o envia ao ouvido, e sem ele o ambiente fica em silêncio total.', 'S14', 'Nervo cria o som']),
+    D: J('Ao ler a palavra "sorvete" em um cartaz, Beto imagina o sabor e sente vontade de tomar um. Ele estica a mão para pegar o sorvete.', 'Quais funções do sistema nervoso aparecem nessa situação?',
+      ['Percepção sensorial (visão), interpretação no encéfalo e comando motor para os músculos da mão.', 'Sentir, interpretar, mover'],
+      ['Apenas movimento, pois ler e sentir vontade não dependem do sistema nervoso, e sim dos músculos da mão.', 'S17', 'Só movimento'], ['Apenas sensação, pois o movimento da mão acontece sozinho, sem receber ordem alguma.', 'S18', 'Só sensação']),
+  } },
+  /* ===== EF06CI08 · c1 · estrutura do olho ===== */
+  o1: { skill: 'EF06CI08', forms: {
+    A: J('Em um modelo do olho, a pupila é o orifício central por onde a luz entra, e o cristalino fica logo atrás dela.', 'Qual é a função do cristalino?',
+      ['Funcionar como uma lente que focaliza a luz para formar a imagem na retina.', 'Lente que focaliza'],
+      ['Produzir a luz que o olho usa para ver os objetos, como se fosse uma pequena lanterna.', 'V1', 'Produz luz'], ['Guardar as imagens que o olho vê, funcionando como uma memória fotográfica.', 'Z1', 'Guarda imagens']),
+    B: J('Uma ilustração mostra a retina como a camada do fundo do olho, rica em células sensíveis à luz e ligada ao nervo óptico.', 'Qual é o papel da retina?',
+      ['Captar a luz, transformá-la em sinais nervosos e enviá-los ao encéfalo pelo nervo óptico.', 'Capta a luz'],
+      ['Controlar a quantidade de luz que entra, aumentando ou diminuindo o tamanho da pupila em cada situação.', 'Z2', 'Regula a pupila'], ['Proteger o olho de poeira e de choques, como uma capa transparente na frente do olho.', 'Z3', 'Protege o olho']),
+    C: J('Após uma pequena lesão, Ana tem a córnea (a parte transparente da frente do olho) muito turva, embora a retina e o nervo óptico estejam saudáveis.', 'Por que Ana enxerga mal?',
+      ['A córnea turva impede a luz de entrar e chegar bem à retina, então a imagem se forma sem nitidez.', 'Luz não chega bem'],
+      ['A retina deixou de captar luz porque é a córnea que produz as imagens que ela envia ao encéfalo pelo nervo.', 'Z4', 'Córnea cria imagens'], ['O nervo óptico passou a receber imagens da córnea direto, sem precisar da luz que chega ao olho.', 'Z5', 'Imagem sem luz']),
+    D: J('Para a aula, os alunos ligam estruturas do olho às funções: íris, cristalino e retina.', 'Qual ligação está correta?',
+      ['Íris regula o tamanho da pupila; cristalino focaliza a luz; retina capta a luz e gera sinais.', 'Íris, cristalino, retina'],
+      ['Íris capta a luz; cristalino regula a entrada de luz; retina focaliza a imagem.', 'Z6', 'Funções trocadas'], ['Íris focaliza a imagem; cristalino capta a luz; retina regula o tamanho da pupila em cada ambiente.', 'Z7', 'Funções embaralhadas']),
+  } },
+  /* ===== EF06CI08 · c2 · luz, cores e resposta fisiológica ===== */
+  o2: { skill: 'EF06CI08', forms: {
+    A: J('Ao sair de um cinema escuro para a rua ensolarada, Luísa fecha os olhos por instantes e vê tudo muito claro. Depois se acostuma.', 'O que acontece com a pupila ao passar do escuro para o claro?',
+      ['A pupila diminui, reduzindo a luz que entra e protegendo a retina do excesso de claridade.', 'Pupila diminui'],
+      ['A pupila aumenta, deixando entrar mais luz, para que a retina enxergue melhor no sol forte.', 'Z8', 'Pupila aumenta'], ['A pupila não muda, pois o tamanho dela é sempre o mesmo em qualquer ambiente.', 'Z9', 'Pupila não muda']),
+    B: J('Em um quarto com pouquíssima luz, Davi tem dificuldade para distinguir as cores dos objetos, que parecem acinzentados.', 'Qual explicação científica é a mais adequada?',
+      ['Com pouca luz, as células da retina sensíveis às cores funcionam mal e só as sensíveis à claridade captam tons de cinza.', 'Células das cores falham'],
+      ['As cores dos objetos desaparecem no escuro, pois os objetos perdem a sua cor própria quando ficam totalmente sem iluminação.', 'Z10', 'A cor some no escuro'], ['Os olhos de Davi deixam de captar luz e passam a emitir as cores, que parecem acinzentadas.', 'V1', 'Olho emite cor']),
+    C: J('Uma professora mostra que uma maçã vermelha, sob luz branca, parece vermelha porque reflete a luz vermelha e absorve boa parte das outras cores.', 'Como o olho identifica a cor vermelha da maçã?',
+      ['A luz vermelha refletida entra no olho, é captada pela retina e interpretada como vermelha pelo encéfalo.', 'Luz refletida e interpretada'],
+      ['A maçã emite luz vermelha própria, que o olho recebe, mesmo sem nenhuma outra fonte de luz por perto no ambiente.', 'V4', 'A maçã emite luz'], ['O olho pinta a maçã de vermelho ao olhar para ela, e o encéfalo só confere se a cor está certa.', 'Z11', 'O olho pinta a maçã']),
+    D: J('Em um simulador, o aluno aumenta a intensidade da luz que chega ao olho virtual e observa a pupila diminuir e a retina receber menos luz.', 'O que o simulador mostra sobre o olho humano?',
+      ['O olho responde à quantidade de luz: a pupila ajusta o tamanho para regular a luz que chega à retina.', 'Pupila regula a luz'],
+      ['O olho não reage à luz, e a imagem formada na retina depende só do tamanho do objeto que é observado.', 'Z9', 'Olho não reage'], ['Quanto mais luz, maior fica a pupila, pois o olho precisa captar toda a luz possível.', 'Z8', 'Mais luz, pupila maior']),
+  } },
+};

@@ -1,0 +1,16 @@
+# segredos, licenças e resultados de alunos: NUNCA versionar
+data/
+data_demo/
+*.db
+*.db-shm
+*.db-wal
+pepper.key
+ADMIN_SENHA.txt
+CODIGOS_DE_ACESSO.txt
+*.log
+node_modules/
+# lixo de teste e backups de patch
+tools/*.bak*
+tools/art2d/_*.png
+tools/gfx_blender_backup/
+app/js/qa.js

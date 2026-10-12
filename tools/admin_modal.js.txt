@@ -1,0 +1,57 @@
+  /* ---------- MODAIS: resultado individual e resultado da sala ---------- */
+  let modalPrint = null;
+  function openModal(title, html, onPrint) { $('modal-title').textContent = title; $('modal-body').innerHTML = html; $('modal').hidden = false; modalPrint = onPrint || null; $('modal-print').hidden = !onPrint; $('modal-body').scrollTop = 0; document.body.style.overflow = 'hidden'; }
+  function closeModal() { $('modal').hidden = true; document.body.style.overflow = ''; }
+  $('modal-x').onclick = $('modal-bg').onclick = closeModal; document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('modal').hidden) closeModal(); }); $('modal-print').onclick = () => { if (modalPrint) modalPrint(); };
+  const SUG = {
+    EF06CI08: 'Retomar com atividade prática: lupa/lentes e uma fonte de luz (convergente × divergente), esquema do olho (cristalino e retina) e a diferença entre captar a luz e interpretar a imagem no cérebro. Discutir miopia × hipermetropia com casos.',
+    EF06CI09: 'Retomar com um modelo de braço (papelão e elásticos) mostrando músculos em pares; esquema nervo → músculo → osso; vídeos de movimento e de reflexo para ligar os três sistemas.',
+    EF06CI10: 'Retomar com roda de conversa orientada: o que são substâncias psicoativas (cafeína, álcool, nicotina), efeito no tempo de reação, dependência e o mito "legal = seguro". Usar o teste de tempo de reação como experimento.',
+  };
+  const skillOfTag = (t) => ({ V: 0, L: 0, E: 1, M: 1, N: 1, P: 2 }[String(t)[0]]);
+  async function openStudent(id) {
+    const d = await call('/api/admin/result/' + id); const S = ST.skills;
+    const weak = d.skills.map((s) => ({ s, info: S.find((x) => x.code === s.code) || {} })).filter((x) => x.s.n < 3);
+    const defas = weak.length ? '<h3 style="margin:14px 0 4px">Habilidades em defasagem deste aluno</h3>' + weak.map((x) => `<div class="item ${x.s.n <= 1 ? 'bad' : ''}"><b>${x.s.code} · ${esc(x.info.short || '')}</b> <span class="tag t-${lv(x.s.n)}">${x.s.n}/3 · ${LVT[lv(x.s.n)]}</span><p class="muted">${esc(SUG[x.s.code] || '')}</p></div>`).join('') : '<p class="ok"><b>Nenhuma habilidade em defasagem neste aluno.</b></p>';
+    openModal('Resultado individual · ' + d.name, detailHtml(d) + defas, () => printBoletins([d]));
+  }
+  function classData(turma) {
+    const R = ST.rows.filter((r) => !turma || r.turma === turma); const S = ST.skills; const n = R.length; if (!n) return null;
+    const notas = R.map((r) => r.nota).sort((a, b) => a - b); const med = n % 2 ? notas[(n - 1) / 2] : (notas[n / 2 - 1] + notas[n / 2]) / 2;
+    const skills = S.map((s, k) => {
+      const cA = R.filter((r) => skN(r, s.code) === 3), cB = R.filter((r) => skN(r, s.code) === 2), cC = R.filter((r) => skN(r, s.code) <= 1); const tags = {}; R.forEach((r) => r.tags.forEach((t) => { if (skillOfTag(t) === k) tags[t] = (tags[t] || 0) + 1; }));
+      const pctNot = (cB.length + cC.length) / n * 100; const pr = pctNot >= 60 ? 'c' : pctNot >= 40 ? 'b' : 'a';
+      return { code: s.code, short: s.short, a: cA.length, b: cB.length, c: cC.length, pctNot, pctRet: cC.length / n * 100, pr, tags: Object.entries(tags).sort((x, y) => y[1] - x[1]).slice(0, 3), retomar: cC.map((r) => r.name), desenv: cB.map((r) => r.name), sug: SUG[s.code] || '' };
+    }).sort((x, y) => y.pctNot - x.pctNot || y.pctRet - x.pctRet);
+    return { turma, R, n, avg: avg(R.map((r) => r.nota)), med, risk: R.filter((r) => S.filter((s) => skN(r, s.code) <= 1).length >= 2).length, skills, sim: R.filter((r) => r.sim).length };
+  }
+  const PRT = { c: ['PRIORIDADE ALTA', 'c'], b: ['ATENÇÃO', 'b'], a: ['SOB CONTROLE', 'a'] };
+  function classHtml(cd, items) {
+    const pct = (v) => Math.round(v);
+    let h = `<div class="kp3"><div><span>Alunos</span><b>${cd.n}</b></div><div><span>Nota média</span><b>${cd.avg.toFixed(1)}</b></div><div><span>Mediana</span><b>${cd.med.toFixed(1)}</b></div><div><span>Alunos em risco</span><b>${cd.risk}</b><small>${pct(cd.risk / cd.n * 100)}% da sala</small></div></div>`;
+    if (cd.sim) h += `<div class="sim">Inclui ${cd.sim} resultado(s) SIMULADO(S) (fictícios).</div>`;
+    h += '<h3 style="margin:16px 0 8px">Habilidades em defasagem · prioridade para a próxima aula</h3>';
+    h += cd.skills.map((s, i) => `<div class="skrow"><div class="skhead"><b>${i + 1}º · ${s.code}</b> ${esc(s.short)} <span class="tag t-${PRT[s.pr][1]}">${PRT[s.pr][0]}</span><span class="muted"> ${s.b + s.c} de ${cd.n} alunos não consolidaram (${pct(s.pctNot)}%)</span></div>
+      <div class="stack"><i class="a" style="width:${s.a / cd.n * 100}%">${s.a || ''}</i><i class="b" style="width:${s.b / cd.n * 100}%">${s.b || ''}</i><i class="c" style="width:${s.c / cd.n * 100}%">${s.c || ''}</i></div>
+      <div class="legend"><span class="tag t-a">Consolidada ${s.a}</span> <span class="tag t-b">Em desenvolvimento ${s.b}</span> <span class="tag t-c">Retomar ${s.c}</span></div>
+      ${s.tags.length ? `<p><b>Onde erram:</b> ${s.tags.map(([t, k]) => `<span class="mis"><b>${t}</b> ${esc(ST.mis[t] || '')} <em>(${k}×)</em></span>`).join(' ')}</p>` : ''}
+      ${s.retomar.length ? `<p><b>Retomar (0–1/3):</b> ${s.retomar.map(esc).join(', ')}</p>` : ''}${s.desenv.length ? `<p><b>Em desenvolvimento (2/3):</b> ${s.desenv.map(esc).join(', ')}</p>` : ''}
+      ${s.pr !== 'a' ? `<p class="sug"><b>Sugestão para a aula:</b> ${esc(s.sug)}</p>` : ''}</div>`).join('');
+    if (items && items.length) h += '<h3 style="margin:16px 0 6px">Itens (nesta sala)</h3><table><tr><th>Item</th><th>Habilidade</th><th>% de acerto</th><th>Distrator mais escolhido</th></tr>' + items.map((i) => `<tr><td>${i.slot + 1}</td><td>${i.skill}</td><td>${i.pct == null ? '—' : `<span class="tag t-${i.pct < 35 ? 'c' : i.pct < 60 ? 'b' : 'a'}">${i.pct}%</span>`}</td><td>${i.topTag ? `${i.topTag} (${i.topN}×)` : '—'}</td></tr>`).join('') + '</table>';
+    h += '<h3 style="margin:16px 0 6px">Resultado de cada aluno</h3><table><tr><th>Aluno</th><th>Turma</th><th>Nota</th>' + ST.skills.map((s) => `<th>${s.code}</th>`).join('') + '</tr>' + cd.R.slice().sort((a, b) => b.nota - a.nota).map((r) => `<tr><td>${esc(r.name)}</td><td>${esc(r.turma)}</td><td><b>${r.nota.toFixed(1)}</b></td>${ST.skills.map((s) => { const k = skN(r, s.code); return `<td><span class="tag t-${lv(k)}">${k}/3</span></td>`; }).join('')}</tr>`).join('') + '</table>';
+    return h;
+  }
+  async function openClass(turma) {
+    const t = turma === undefined ? $('f-turma').value : turma; const cd = classData(t); const turmas = [...new Set(ST.rows.map((r) => r.turma))].sort();
+    const head = `<div class="mfilter"><label>Sala <select id="m-turma"><option value="">Todas as turmas</option>${turmas.map((x) => `<option ${x === t ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label></div>`;
+    if (!cd) { openModal('Resultado da sala', head + '<p class="muted">Sem resultados neste filtro.</p>'); $('m-turma').onchange = (e) => openClass(e.target.value); return; }
+    const p = new URLSearchParams(); if (t) p.set('turma', t); if ($('f-app').value) p.set('app', $('f-app').value); if ($('f-sim').value !== '') p.set('sim', $('f-sim').value);
+    let items = []; try { items = (await call('/api/admin/item-stats?' + p.toString())).items; } catch (e) { /* ok */ }
+    openModal('Resultado da sala · ' + (t || 'todas as turmas'), head + classHtml(cd, items), () => printClassSala(cd, items));
+    $('m-turma').onchange = (e) => openClass(e.target.value);
+  }
+  function printClassSala(cd, items) {
+    $('print').innerHTML = `<div class="pp"><h1>Resultado da sala — ${esc(cd.turma || 'todas as turmas')}</h1><div class="meta">${esc(PACKTITLE)} · gerado em ${new Date().toLocaleString('pt-BR')} · habilidades em defasagem ordenadas por prioridade</div>${classHtml(cd, items)}<p class="meta" style="margin-top:14px">Leitura indicativa (3 itens por habilidade). Responsável: ______________________ Data: ___/___/_____ · © Thiago Silva — Prova Arcade. Dados de estudantes: uso restrito (LGPD).</p></div>`; setTimeout(() => window.print(), 250);
+  }
+  $('open-class').onclick = () => openClass(); $('rep-sala').onclick = () => openClass();
+  document.addEventListener('click', (e) => { const t = e.target.closest('[data-turma]'); if (t) openClass(t.dataset.turma); });

@@ -1,0 +1,18 @@
+@font-face{font-family:"PS2P";src:url("/public/PressStart2P.ttf") format("truetype");font-display:swap}
+:root{--bg:#14102e;--card:#1d1745;--ink:#f4f1ff;--mute:#a9a2d6;--gold:#ffd23f;--p1:#2f6bff;--p2:#ff6a2b;--ok:#3ddc84;--bad:#ff5470}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated;z-index:0}
+.card{position:relative;z-index:1;width:min(92vw,420px);margin:max(4vh,16px) auto;padding:22px 20px 18px;background:rgba(29,23,69,.94);
+  border:4px solid #000;box-shadow:0 0 0 4px var(--gold),0 14px 0 0 rgba(0,0,0,.45);border-radius:6px}
+.logo{font:400 26px/1.15 "PS2P",monospace;margin:0 0 6px;text-align:center;text-shadow:3px 3px 0 #000;display:flex;flex-direction:column;gap:6px;color:var(--gold)}
+.logo .b{color:var(--p1);text-shadow:3px 3px 0 #000,0 0 18px rgba(47,107,255,.7)}
+.sub{margin:0 0 14px;text-align:center;color:var(--mute);font-size:14px}
+label{display:block;margin:12px 0 5px;font:400 10px/1.4 "PS2P",monospace;color:var(--gold)}
+input{width:100%;font-size:18px;padding:12px;border:3px solid #000;border-radius:4px;background:#0d0a22;color:var(--ink);outline:none}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,210,63,.35)}
+button{margin-top:18px;width:100%;font:400 16px "PS2P",monospace;padding:16px;border:4px solid #000;border-radius:4px;background:var(--gold);color:#1a1200;cursor:pointer;box-shadow:0 6px 0 #a07a00}
+button:active{transform:translateY(4px);box-shadow:0 2px 0 #a07a00}
+button[disabled]{opacity:.6}
+.msg{margin:0 0 6px;padding:10px;border-radius:4px;background:rgba(255,84,112,.15);border:2px solid var(--bad);color:#ffd5dc;font-size:14px}
+.legal{margin:16px 0 0;font-size:11px;line-height:1.45;color:var(--mute)}

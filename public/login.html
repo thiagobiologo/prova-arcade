@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14102e">
+<title>Prova Arcade · Acesso</title>
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/public/login.css">
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main class="card" role="main">
+  <h1 class="logo"><span>PROVA</span><span class="b">ARCADE</span></h1>
+  <p class="sub">Protótipo de avaliação diagnóstica gamificada</p>
+  <p id="msg" class="msg" role="alert" hidden></p>
+  <form id="f" autocomplete="off" novalidate>
+    <label for="code">Código de acesso</label>
+    <input id="code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="PROVA-XXXX-XXXX" required>
+    <label for="name">Seu nome completo</label>
+    <input id="name" name="name" type="text" autocomplete="name" maxlength="60" placeholder="Nome e sobrenome" required>
+    <button id="go" type="submit">ENTRAR</button>
+  </form>
+  <p class="legal">© Thiago Silva. Obra autoral protegida (Lei 9.609/98 e Lei 9.610/98). Uso restrito a pessoas licenciadas; o acesso é registrado (nome, aparelho, horário e endereço de rede) para controle de licença.</p>
+</main>
+<script src="/public/login.js"></script>
+</body>
+</html>

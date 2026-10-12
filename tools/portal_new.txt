@@ -1,0 +1,26 @@
+  _portal(x, g, f) {
+    // arco de pedra de pé no chão: pilares, verga, selo e energia por dentro (encaixado no piso)
+    const on = g.enabled, X = g.x, Y = g.y, W = g.w, H = g.h, fy = Y + H; const cx = X + W / 2;
+    x.save();
+    x.fillStyle = 'rgba(0,0,0,.35)'; x.beginPath(); x.ellipse(cx, fy + 0.5, W * 0.62, 3.2, 0, 0, 6.3); x.fill();
+    if (on) this._glow(x, cx, Y + H * 0.55, 46, 'rgba(255,214,110,.55)', 0.8 + 0.12 * Math.sin(f / 14));
+    const ix = X + 6, iw = W - 12, it = Y + 9, ib = fy - 3;
+    x.save(); x.beginPath(); x.moveTo(ix, ib); x.lineTo(ix, it + iw / 2); x.arc(cx, it + iw / 2, iw / 2, Math.PI, 0); x.lineTo(ix + iw, ib); x.closePath(); x.clip();
+    if (on) {
+      const gr = x.createLinearGradient(0, it, 0, ib); gr.addColorStop(0, '#fff7c9'); gr.addColorStop(0.5, '#ffd23f'); gr.addColorStop(1, '#ff8a2e'); x.fillStyle = gr; x.fillRect(ix, it, iw, ib - it);
+      x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 1.3; for (let k = 0; k < 4; k++) { x.beginPath(); for (let yy = 0; yy <= ib - it; yy += 3) { const xx = cx + Math.sin(yy / 5 - f / 9 + k * 1.6) * (iw * 0.3) * (0.6 + 0.4 * Math.sin(f / 30 + k)); if (yy === 0) x.moveTo(xx, it + yy); else x.lineTo(xx, it + yy); } x.stroke(); }
+      x.fillStyle = 'rgba(255,255,255,.9)'; for (let k = 0; k < 6; k++) { const t = ((f * 0.8 + k * 23) % 60) / 60; x.beginPath(); x.arc(ix + 3 + ((k * 37) % (iw - 6)), ib - t * (ib - it), 1.1 * (1 - t) + 0.4, 0, 6.3); x.fill(); }
+    } else {
+      x.fillStyle = '#171433'; x.fillRect(ix, it, iw, ib - it); x.fillStyle = '#3a3868'; for (let yy = it + 6; yy < ib; yy += 9) x.fillRect(ix, yy, iw, 3);
+      x.fillStyle = '#ff5470'; x.beginPath(); x.arc(cx, it + (ib - it) / 2, 3.2, 0, 6.3); x.fill(); x.fillStyle = '#171433'; x.fillRect(cx - 0.8, it + (ib - it) / 2, 1.6, 4);
+    }
+    x.restore();
+    const st = x.createLinearGradient(X, 0, X + W, 0); st.addColorStop(0, '#8f93b8'); st.addColorStop(0.5, '#5d6190'); st.addColorStop(1, '#3d4070');
+    x.fillStyle = st; x.fillRect(X, Y + 12, 6, H - 12); x.fillRect(X + W - 6, Y + 12, 6, H - 12);
+    x.beginPath(); x.moveTo(X, Y + 14); x.arc(cx, Y + 14, W / 2, Math.PI, 0); x.lineTo(X + W - 6, Y + 14); x.arc(cx, Y + 14, W / 2 - 6, 0, Math.PI, true); x.closePath(); x.fill();
+    x.fillStyle = '#2e3060'; x.fillRect(X - 3, fy - 4, 9, 4); x.fillRect(X + W - 6, fy - 4, 9, 4); x.fillRect(X - 1, fy - 2, W + 2, 2);
+    x.fillStyle = on ? '#ffe36b' : '#6b6fa0'; x.beginPath(); x.moveTo(cx, Y - 3); x.lineTo(cx + 4, Y + 3); x.lineTo(cx, Y + 9); x.lineTo(cx - 4, Y + 3); x.closePath(); x.fill();
+    x.fillStyle = on ? '#fff' : '#22244a'; for (const sx of [X + 3, X + W - 3]) for (let yy = Y + 20; yy < fy - 6; yy += 10) x.fillRect(sx - 0.8, yy, 1.6, 4);
+    if (on) { const k = Math.sin(f / 8); x.fillStyle = '#ffe36b'; x.strokeStyle = 'rgba(40,20,0,.6)'; x.lineWidth = 1.2; x.beginPath(); x.moveTo(cx - 6, Y - 20 + k * 2); x.lineTo(cx + 6, Y - 20 + k * 2); x.lineTo(cx, Y - 11 + k * 2); x.closePath(); x.stroke(); x.fill(); x.font = '700 7px "Lilita One", system-ui'; x.textAlign = 'center'; x.fillStyle = '#fff6b0'; x.fillText('SAÍDA', cx, Y - 24 + k * 2); }
+    x.restore();
+  }

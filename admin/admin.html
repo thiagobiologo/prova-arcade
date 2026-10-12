@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prova Arcade · Central de Gestão</title>
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<!-- ===== LOGIN ===== -->
+<section id="login">
+  <form id="lf" class="login-card" autocomplete="off">
+    <div class="brand"><span class="logo-mark">PA</span><div><b>Prova Arcade</b><small>Central de Gestão</small></div></div>
+    <h1>Acesso restrito</h1>
+    <p>Painel exclusivo do autor e de gestores autorizados.</p>
+    <label for="pw">Senha de administrador</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••••••" required>
+    <button class="btn primary block">Entrar</button>
+    <p id="lmsg" class="err"></p>
+    <small class="legal">© Thiago Silva. Acessos a este painel são registrados.</small>
+  </form>
+</section>
+
+<!-- ===== APLICATIVO ===== -->
+<div id="shell" hidden>
+  <aside id="side">
+    <div class="brand"><span class="logo-mark">PA</span><div><b>Prova Arcade</b><small>Central de Gestão</small></div></div>
+    <nav id="nav">
+      <button data-page="overview" class="on"><i>▦</i>Visão geral</button>
+      <button data-page="results"><i>☰</i>Resultados</button>
+      <button data-page="apps"><i>▣</i>Aplicações e QR Code</button>
+      <button data-page="reports"><i>⇩</i>Relatórios e planilhas</button>
+      <button data-page="licenses"><i>⚿</i>Licenças e uso</button>
+      <button data-page="help"><i>?</i>Ajuda e proteção de dados</button>
+    </nav>
+    <div class="side-foot"><div id="srv-status"><span class="dot"></span> Servidor ativo</div><button id="logout" class="btn ghost sm">Sair</button></div>
+  </aside>
+  <div id="main">
+    <header id="top">
+      <div><h2 id="page-title">Visão geral</h2><p id="page-sub">Indicadores consolidados das aplicações</p></div>
+      <div class="filters" id="filters">
+        <label>Aplicação<select id="f-app"><option value="">Todas</option></select></label>
+        <label>Turma<select id="f-turma"><option value="">Todas</option></select></label>
+        <label>Origem dos dados<select id="f-sim"><option value="">Reais + simulados</option><option value="0" selected>Somente reais</option><option value="1">Somente simulados</option></select></label>
+        <button id="f-reload" class="btn ghost sm" title="Atualizar">↻</button>
+      </div>
+    </header>
+    <div id="banner" hidden></div>
+
+    <!-- VISÃO GERAL -->
+    <section class="page on" id="p-overview">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid g3">
+        <div class="card"><h3>Distribuição das notas</h3><div class="cv"><canvas id="c-hist"></canvas></div></div>
+        <div class="card"><h3>Níveis por habilidade</h3><div class="cv"><canvas id="c-levels"></canvas></div></div>
+        <div class="card"><h3>Nota média por turma</h3><div class="cv"><canvas id="c-turma"></canvas></div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><h3>Mapa de calor · % de alunos com a habilidade consolidada <small>clique na turma para abrir o resultado da sala</small></h3><div id="heat"></div></div>
+        <div class="card"><h3>Equívocos mais frequentes <small>o que os alunos provavelmente pensam</small></h3><div class="cv tall"><canvas id="c-mis"></canvas></div></div>
+      </div>
+      <div class="grid g3">
+        <div class="card"><h3>Aplicações por dia</h3><div class="cv"><canvas id="c-days"></canvas></div></div>
+        <div class="card"><h3>Termômetro de tensão <small>autorrelato, antes × depois</small></h3><div class="cv"><canvas id="c-mood"></canvas></div><p class="note" id="mood-note"></p></div>
+        <div class="card"><h3>Qualidade dos itens</h3><div class="scroll sm"><table id="t-items"></table></div></div>
+      </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="page" id="p-results">
+      <div class="card">
+        <div class="tools"><input id="q" type="search" placeholder="Buscar aluno, turma, aplicação…"><span id="count" class="muted"></span><span class="spacer"></span><button class="btn primary sm" id="open-class">▦ Resultado da sala</button><a class="btn ghost sm" id="dl-xlsx">⇩ Excel</a><button class="btn ghost sm" id="print-class">⎙ PDF da turma</button></div>
+        <div class="scroll"><table id="t-res"></table></div>
+        <div class="pager"><button class="btn ghost sm" id="pg-prev">‹</button><span id="pg-info"></span><button class="btn ghost sm" id="pg-next">›</button></div>
+      </div>
+    </section>
+
+    <!-- APLICAÇÕES -->
+    <section class="page" id="p-apps">
+      <div class="card">
+        <h3>Nova aplicação (gera o QR Code da sala)</h3>
+        <form id="af" class="formrow">
+          <label>Licença<select id="a_lic" required></select></label>
+          <label class="w2">Nome da aplicação<input id="a_title" placeholder="Ex.: Ciências 6º A · 3º bimestre" required></label>
+          <label>Tipo<select id="a_kind"><option value="sala">Sala de aula (QR da turma)</option><option value="demo">Demonstração para um destinatário (link rastreado)</option></select></label>
+          <label class="w2" id="a_rec_w" hidden>Destinatário (nome / empresa / diretoria)<input id="a_rec" placeholder="Ex.: Diretoria de Ensino X · Maria"></label><label id="a_md_w" hidden>Máx. aparelhos deste link<input id="a_md" type="number" min="1" max="50" value="3"></label>
+          <label>Modo<select id="a_len"><option value="quick">Demo rápido (~8 min)</option><option value="full">Completo (fases longas)</option></select></label>
+          <label>Válida por (horas)<input id="a_hours" type="number" min="1" max="2160" value="12"></label>
+          <label class="w2">Endereço público do site<input id="a_base" placeholder="https://prova.seudominio.com.br"></label>
+          <button class="btn primary">Gerar QR Code</button>
+        </form>
+        <p id="a_warn" class="warn"></p>
+        <div id="qrout" class="qrout" hidden>
+          <div id="qrimg"></div>
+          <div class="qrinfo"><b id="qrtitle"></b><input id="qrlink" readonly>
+            <div class="row"><button type="button" class="btn ghost sm" id="qr-copy">Copiar link</button><button type="button" class="btn ghost sm" id="qr-png">Baixar PNG</button><button type="button" class="btn primary sm" id="qr-print">Imprimir cartaz (A4)</button></div>
+            <small>O aluno aponta a câmera, toca no link e cai direto no jogo. Cada leitura abre uma sessão registrada.</small></div>
+        </div>
+      </div>
+      <div class="card"><h3>Aplicações criadas</h3><div class="scroll"><table id="ta"></table></div></div>
+    </section>
+
+    <!-- RELATÓRIOS -->
+    <section class="page" id="p-reports">
+      <div class="grid g3">
+        <div class="card rep"><div class="ico x">XLS</div><h3>Planilha Excel (.xlsx)</h3><p>5 abas: <b>Resultados</b> (nota calculada por fórmula), <b>Itens</b> (cada resposta), <b>Resumo por turma</b>, <b>Equívocos</b> e <b>Leia-me</b>. Respeita os filtros acima.</p><a class="btn primary" id="rep-xlsx">Baixar planilha</a></div>
+        <div class="card rep"><div class="ico p">PDF</div><h3>Relatório da turma</h3><p>Documento A4 com indicadores, gráficos, mapa de calor, equívocos e lista de alunos com nota. Abre a janela de impressão: escolha <b>Salvar como PDF</b>.</p><button class="btn primary" id="rep-class">Gerar PDF da turma</button></div>
+        <div class="card rep"><div class="ico b">BOL</div><h3>Boletins individuais</h3><p>Um boletim A4 por aluno (nota, níveis por habilidade, equívocos e itens). Ótimo para devolutiva e para o professor.</p><button class="btn primary" id="rep-bol">Gerar boletins (PDF)</button></div>
+        <div class="card rep"><div class="ico s">SAL</div><h3>Resultado da sala (modal)</h3><p>Janela com as <b>habilidades em defasagem por prioridade</b>, onde os alunos erram, quem precisa de retomada e <b>sugestão de atividade</b> para a próxima aula. Dá para imprimir em PDF.</p><button class="btn primary" id="rep-sala">Abrir resultado da sala</button></div>
+      </div>
+      <div class="card"><h3>Como a nota é calculada</h3>
+        <p><b>Nota (0 a 10) = acertos ÷ 9 × 10.</b> Cada habilidade tem 3 itens: <b>3/3 = Consolidada</b>, <b>2/3 = Em desenvolvimento</b>, <b>0–1/3 = Precisa de retomada</b>. A nota é calculada <b>no servidor</b> a partir do bloco que o aluno escolheu (o navegador do aluno não consegue alterá-la). Na planilha ela é uma <b>fórmula</b>: o professor pode mudar os pesos.</p>
+        <p class="muted">Pontos de jogo, moedas, estrelas, medalhas, corações e a luta contra o chefe <b>nunca</b> entram na nota. O termômetro de tensão é um autorrelato exploratório.</p></div>
+    </section>
+
+    <!-- LICENÇAS -->
+    <section class="page" id="p-licenses">
+      <div class="card"><h3>Nova licença</h3>
+        <form id="nf" class="formrow"><label class="w2">Titular<input id="n_holder" placeholder="Pessoa ou escola" required></label><label>Órgão / escola<input id="n_org"></label><label>Validade (dias)<input id="n_days" type="number" min="1" max="3650"></label><label>Aparelhos (máx.)<input id="n_dev" type="number" min="1" max="500" value="60"></label><label>Edição<select id="n_ed"><option value="pesquisa">PESQUISA · aplicação em sala (coleta de dados)</option><option value="premium">DEMO PÚBLICA · currículo, LinkedIn, diretoria</option></select></label><button class="btn primary">Gerar código</button></form>
+        <p id="newcode" class="ok"></p></div>
+      <div class="card"><h3>Licenças</h3><div class="scroll"><table id="tl"></table></div></div>
+      <div class="card"><h3>Quem está usando <small>últimos 300 acessos</small></h3><div class="scroll"><table id="ts"></table></div></div>
+      <div class="card"><h3>Registro de eventos <a class="btn ghost sm" href="/api/admin/export.csv">⇩ CSV</a></h3><div class="scroll"><table id="te"></table></div></div>
+    </section>
+
+    <!-- AJUDA -->
+    <section class="page" id="p-help">
+      <div class="card"><h3>Fluxo de uma aula</h3><ol><li>Em <b>Aplicações e QR Code</b>, gere o QR da turma e imprima o cartaz.</li><li>O aluno lê o QR, informa nome e turma e joga (1 ou 2 por aparelho).</li><li>Ao terminar, o resultado é gravado e aparece em <b>Resultados</b> e na <b>Visão geral</b>.</li><li>Em <b>Relatórios</b>, baixe a planilha Excel ou gere o PDF.</li></ol></div>
+      <div class="card"><h3>Proteção de dados (LGPD)</h3><ul><li>São gravados: nome, turma, escolhas nas questões, pontos e termômetro de tensão. Não são coletados documentos, e-mail ou localização.</li><li>Alunos são menores: informe a escola/responsáveis sobre a finalidade (avaliação diagnóstica) e mantenha acesso restrito.</li><li>Dados marcados <b>SIMULADO</b> são fictícios, só para demonstração; você pode apagá-los em <b>Licenças e uso</b>.</li><li>Exportações contêm dados de estudantes: guarde com cuidado.</li></ul>
+        <div class="row"><button class="btn ghost" id="demo-load">Carregar dados simulados (36 alunos)</button><button class="btn ghost" id="demo-clear">Apagar dados simulados</button></div></div>
+    </section>
+  </div>
+  <div id="modal" hidden><div id="modal-bg"></div><div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header id="modal-head"><h3 id="modal-title"></h3><span class="spacer"></span><button id="modal-print" class="btn ghost sm">⎙ PDF</button><button id="modal-x" class="btn ghost sm">Fechar ✕</button></header><div id="modal-body"></div></div></div>
+</div>
+<div id="print"></div>
+<script src="/admin/chart.umd.js"></script>
+<script src="/admin/qrcode.js"></script>
+<script src="/admin/admin.js"></script>
+</body>
+</html>

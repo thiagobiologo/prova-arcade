@@ -1,0 +1,19 @@
+# Instância PÚBLICA E INDEPENDENTE da vitrine (edição PREMIUM) — para o link do LinkedIn/WhatsApp.
+# Use outro serviço/domínio e outro disco do que a versão de PESQUISA (assim os dados dos alunos nunca se misturam).
+services:
+  - type: web
+    name: prova-arcade-demo
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: TRUST_PROXY
+        value: "1"
+      - key: PA_EDITION
+        value: premium
+      - key: PA_DATA
+        value: /srv/data
+    disk:
+      name: dados-demo
+      mountPath: /srv/data
+      sizeGB: 1

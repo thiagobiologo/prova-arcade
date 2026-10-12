@@ -1,0 +1,1 @@
+{"name":"prova-arcade-demo","version":"0.1.0","private":true,"description":"Prova Arcade - prototipo (c) Thiago Silva","scripts":{"start":"node server.js"},"engines":{"node":">=22"}}
